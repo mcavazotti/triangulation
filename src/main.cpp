@@ -1,12 +1,15 @@
 #include "../include/point.hpp"
 #include "../include/halfEdge.hpp"
 #include "../include/ioFunctions.hpp"
-#include <iostream>
+#include "../include/monotoneFunctions.hpp"
+#include <stdio.h>
 
 int main(int argc, char const *argv[])
 {
-  int numPoints;
-  HalfEdge<int> *dcel = readDCEL(&numPoints);
+  HalfEdge<int> *dcel = readDCEL();
+
+  // printPolygon();
+  makeMonotone(dcel);
 
   return 0;
 }
