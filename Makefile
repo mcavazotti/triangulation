@@ -2,6 +2,8 @@ CC=g++
 
 CFLAGS= -g
 
+LFLAGS= -lm
+
 SRCDIR = src
 OBJDIR = bin
 INCDIR = include
@@ -13,7 +15,13 @@ OBJECTS  := $(SOURCES:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 
 
 triangulate: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -o $@
+	$(CC) $(OBJECTS) $(CFLAGS) $(LFLAGS) -o $@
 
-$(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
+$(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp $(INCLUDES)
 	$(CC) $(CFLAGS) -c $< -o $@
+
+clean:
+	rm  bin/* || true
+
+purge: clean
+	rm ./triangulate || true
