@@ -1,7 +1,7 @@
 #include "../include/ioFunctions.hpp"
 #include <iostream>
 
-HalfEdge<int> *readDCEL(int *numP)
+HalfEdge<int> *readDCEL()
 {
   Point<int> *tmpPoint;
   Point<int> *prevPoint = nullptr;
@@ -16,8 +16,6 @@ HalfEdge<int> *readDCEL(int *numP)
 
   int numPoints;
   std::cin >> numPoints;
-
-  *numP = numPoints;
 
   for (int i = 0; i < numPoints; i++)
   {
@@ -60,7 +58,6 @@ HalfEdge<int> *readDCEL(int *numP)
 
     prevEdge = tmpEdge;
     prevPoint = tmpPoint;
-    std::cerr << "(" << x << "," << y << ")\n";
   }
 
   // Tie first and last edges
@@ -69,7 +66,7 @@ HalfEdge<int> *readDCEL(int *numP)
     tmpEdge->setTo(firstEdge->from());
     tmpEdge->setNext(firstEdge);
 
-    twin = new HalfEdge<int>(tmpEdge->from(), tmpEdge->to(), firstEdge->twin(), tmpEdge->prev()->twin(), tmpEdge);
+    twin = new HalfEdge<int>(tmpEdge->to(), tmpEdge->from(), firstEdge->twin(), tmpEdge->prev()->twin(), tmpEdge);
     tmpEdge->prev()->twin()->setPrev(twin);
     tmpEdge->setTwin(twin);
 
@@ -100,5 +97,15 @@ HalfEdge<int> *readDCEL(int *numP)
     slope2 = float(highestTwin->to()->y - highestTwin->from()->y) / float(highestTwin->to()->x - highestTwin->from()->x);
 
     return slope1 > slope2 ? highestEdge : highestTwin;
+  }
+}
+
+void printPolygon()
+{
+  std::cout << Point<int>::pointList.size() << "\n";
+
+  for (const auto &p : Point<int>::pointList)
+  {
+    std::cout << p->x << " " << p->y << "\n";
   }
 }
