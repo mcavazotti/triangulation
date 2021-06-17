@@ -8,8 +8,8 @@ int main(int argc, char const *argv[])
 {
   HalfEdge<int> *dcel = readDCEL();
 
-  // printPolygon();
   makeMonotone(dcel);
+  printPolygon();
 
   return 0;
 }

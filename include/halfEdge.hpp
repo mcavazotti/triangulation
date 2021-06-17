@@ -7,10 +7,30 @@ template <typename T>
 class HalfEdge
 {
 public:
-  HalfEdge() : p1(nullptr), p2(nullptr), p(nullptr), n(nullptr), t(nullptr), h(nullptr) {}
-  HalfEdge(Point<T> *a1) : p1(a1), p2(nullptr), p(nullptr), n(nullptr), t(nullptr), h(nullptr) {}
-  HalfEdge(Point<T> *a1, Point<T> *a2) : p1(a1), p2(a2), p(nullptr), n(nullptr), t(nullptr), h(nullptr) {}
-  HalfEdge(Point<T> *a1, Point<T> *a2, HalfEdge<T> *prev, HalfEdge<T> *next, HalfEdge<T> *twin) : p1(a1), p2(a2), p(prev), n(next), t(twin), h(nullptr) {}
+  HalfEdge() : p1(nullptr), p2(nullptr), p(nullptr), n(nullptr), t(nullptr), h(nullptr)
+  {
+#ifdef DEBUG
+    edgeList.push_back(this);
+#endif
+  }
+  HalfEdge(Point<T> *a1) : p1(a1), p2(nullptr), p(nullptr), n(nullptr), t(nullptr), h(nullptr)
+  {
+#ifdef DEBUG
+    edgeList.push_back(this);
+#endif
+  }
+  HalfEdge(Point<T> *a1, Point<T> *a2) : p1(a1), p2(a2), p(nullptr), n(nullptr), t(nullptr), h(nullptr)
+  {
+#ifdef DEBUG
+    edgeList.push_back(this);
+#endif
+  }
+  HalfEdge(Point<T> *a1, Point<T> *a2, HalfEdge<T> *prev, HalfEdge<T> *next, HalfEdge<T> *twin) : p1(a1), p2(a2), p(prev), n(next), t(twin), h(nullptr)
+  {
+#ifdef DEBUG
+    edgeList.push_back(this);
+#endif
+  }
 
   bool operator>(const HalfEdge<T> &e) const
   {
@@ -47,9 +67,24 @@ public:
   void setTwin(HalfEdge *e) { t = e; }
   void setHelper(HalfEdge *e) { h = e; }
 
+#ifdef DEBUG
+  static std::vector<HalfEdge<T> *> edgeList;
+#endif
+
 private:
   Point<T> *p1, *p2;
   HalfEdge<T> *p, *n, *t, *h;
+
+#ifdef DEBUG
+  static int counter;
+#endif
 };
+
+#ifdef DEBUG
+template <typename T>
+int HalfEdge<T>::counter = 0;
+template <typename T>
+std::vector<HalfEdge<T> *> HalfEdge<T>::edgeList = std::vector<HalfEdge<T> *>();
+#endif
 
 #endif

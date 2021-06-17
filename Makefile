@@ -1,6 +1,6 @@
 CC=g++
 
-CFLAGS= -g
+CFLAGS= -g -DDEBUG
 
 LFLAGS= -lm
 

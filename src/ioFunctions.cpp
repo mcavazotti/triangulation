@@ -87,12 +87,12 @@ HalfEdge<int> *readDCEL()
 
   if (deltaX1 * deltaX2 <= 0)
   {
-    // Return half-edge that is pointing to the right
+    // Return half-edge that is pointing to the left
     return deltaX1 > deltaX2 ? highestEdge : highestTwin;
   }
   else
   {
-    // Return half-edge that has the greatest slope (coeficiente angular)
+    // Return half-edge that has the smallest slope (coeficiente angular)
     slope1 = float(highestEdge->to()->y - highestEdge->from()->y) / float(highestEdge->to()->x - highestEdge->from()->x);
     slope2 = float(highestTwin->to()->y - highestTwin->from()->y) / float(highestTwin->to()->x - highestTwin->from()->x);
 
@@ -102,10 +102,20 @@ HalfEdge<int> *readDCEL()
 
 void printPolygon()
 {
+  #ifdef DEBUG
+  std::cout << HalfEdge<int>::edgeList.size() << "\n";
+
+  for (const auto &e : HalfEdge<int>::edgeList)
+  {
+    std::cout << e->from()->x << " " << e->from()->y << " " << e->to()->x << " " << e->to()->y << " " << e->from()->type << "\n";
+  }
+
+#else
   std::cout << Point<int>::pointList.size() << "\n";
 
   for (const auto &p : Point<int>::pointList)
   {
     std::cout << p->x << " " << p->y << "\n";
   }
+  #endif
 }

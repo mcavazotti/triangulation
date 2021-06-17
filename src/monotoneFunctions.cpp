@@ -8,7 +8,7 @@
 #include <stdio.h>
 bool edgePointerComparisonFunc(const HalfEdge<int> *a, const HalfEdge<int> *b)
 {
-  return a < b;
+  return a->from()->x < b->from()->x;
 }
 
 class edgePointerComparison
@@ -36,7 +36,7 @@ vertexType computeVertexType(HalfEdge<int> *e)
   auto nextVertex = e->to();
 
   // One neighbor is above and one neighbor is bellow. Therefore the vertex is regular
-  if ((prevVertex->y - vertex->y) * (nextVertex->y - vertex->y) <= 0)
+  if (((*vertex) > (*prevVertex) && (*vertex) < (*nextVertex)) || ((*vertex) < (*prevVertex) && (*vertex) > (*nextVertex)))
   {
     return regular;
   }
@@ -67,14 +67,26 @@ vertexType computeVertexType(HalfEdge<int> *e)
 
 void insertDiagonal(HalfEdge<int> *fromEdge, HalfEdge<int> *toEdge)
 {
-  auto diagonal = new HalfEdge<int>(fromEdge->from(),toEdge->from(),fromEdge->twin(),toEdge->prev()->twin(),nullptr);
+  auto diagonal = new HalfEdge<int>(fromEdge->from(), toEdge->from(), fromEdge->twin(), toEdge->prev()->twin(), nullptr);
   fromEdge->twin()->setNext(diagonal);
   toEdge->prev()->twin()->setPrev(diagonal);
 
-  auto diagonalTwin = new HalfEdge<int>(toEdge->from(),fromEdge->from(),toEdge->twin(),fromEdge->prev()->twin(),diagonal);
+  auto diagonalTwin = new HalfEdge<int>(toEdge->from(), fromEdge->from(), toEdge->twin(), fromEdge->prev()->twin(), diagonal);
   diagonal->setTwin(diagonalTwin);
   toEdge->twin()->setNext(diagonalTwin);
   fromEdge->prev()->twin()->setPrev(diagonalTwin);
+}
+
+typedef std::set<HalfEdge<int> *, bool (*)(const HalfEdge<int> *, const HalfEdge<int> *)> edgeSet;
+
+HalfEdge<int> *getPredecessor(edgeSet t, HalfEdge<int> *e)
+{
+  auto tmp = t.lower_bound(e);
+  auto begin = t.begin();
+  auto end = t.end();
+  auto size = t.size();
+  auto it = tmp == t.end() ? std::prev(t.end()) : --tmp;
+  return *it;
 }
 
 void makeMonotone(HalfEdge<int> *dcel)
@@ -88,6 +100,7 @@ void makeMonotone(HalfEdge<int> *dcel)
   {
     q.push(tmpEdge);
     tmpEdge->from()->type = computeVertexType(tmpEdge);
+    tmpEdge->setHelper(tmpEdge);
     tmpEdge = tmpEdge->next();
   } while (tmpEdge != dcel);
 
@@ -102,16 +115,53 @@ void makeMonotone(HalfEdge<int> *dcel)
       edgeVertex->setHelper(edgeVertex);
       break;
     case end:
-    //TODO: helper() might be null
       if (edgeVertex->prev()->helper()->from()->type == merge)
       {
         insertDiagonal(edgeVertex, edgeVertex->prev()->helper());
       }
       t.erase(edgeVertex->prev());
       break;
-
-
-    
+    case split:
+      tmpEdge = getPredecessor(t, edgeVertex);
+      insertDiagonal(edgeVertex, tmpEdge->helper());
+      tmpEdge->setHelper(edgeVertex);
+      edgeVertex->setHelper(edgeVertex);
+      t.insert(edgeVertex);
+      break;
+    case merge:
+      if (edgeVertex->prev()->helper()->from()->type == merge)
+      {
+        insertDiagonal(edgeVertex, edgeVertex->prev()->helper());
+      }
+      t.erase(edgeVertex->prev());
+      tmpEdge = getPredecessor(t, edgeVertex);
+      if (tmpEdge->helper()->from()->type == merge)
+      {
+        insertDiagonal(edgeVertex, tmpEdge->helper());
+      }
+      tmpEdge->setHelper(edgeVertex);
+      break;
+    case regular:
+      if (*(edgeVertex->next()) > *edgeVertex)
+      {
+        if (edgeVertex->prev()->helper()->from()->type == merge)
+        {
+          insertDiagonal(edgeVertex, edgeVertex->prev()->helper());
+        }
+        t.erase(edgeVertex->prev());
+        edgeVertex->setHelper(edgeVertex);
+        t.insert(edgeVertex);
+      }
+      else
+      {
+        tmpEdge = getPredecessor(t, edgeVertex);
+        if (tmpEdge->helper()->from()->type == merge)
+        {
+          insertDiagonal(edgeVertex, tmpEdge->helper());
+        }
+        tmpEdge->setHelper(edgeVertex);
+      }
+      break;
     }
   }
 }
