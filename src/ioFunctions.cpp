@@ -107,7 +107,7 @@ void printPolygon()
 
   for (const auto &e : HalfEdge<int>::edgeList)
   {
-    std::cout << e->from()->x << " " << e->from()->y << " " << e->to()->x << " " << e->to()->y << " " << e->from()->type << "\n";
+    std::cout << e->from()->x << " " << e->from()->y << " " << e->to()->x << " " << e->to()->y << " " << e->from()->type << " " << e->insertedAfter << "\n";
   }
 
 #else
