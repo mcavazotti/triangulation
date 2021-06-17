@@ -10,24 +10,28 @@ public:
   HalfEdge() : p1(nullptr), p2(nullptr), p(nullptr), n(nullptr), t(nullptr), h(nullptr)
   {
 #ifdef DEBUG
+    insertedAfter = 0;
     edgeList.push_back(this);
 #endif
   }
   HalfEdge(Point<T> *a1) : p1(a1), p2(nullptr), p(nullptr), n(nullptr), t(nullptr), h(nullptr)
   {
 #ifdef DEBUG
+    insertedAfter = 0;
     edgeList.push_back(this);
 #endif
   }
   HalfEdge(Point<T> *a1, Point<T> *a2) : p1(a1), p2(a2), p(nullptr), n(nullptr), t(nullptr), h(nullptr)
   {
 #ifdef DEBUG
+    insertedAfter = 0;
     edgeList.push_back(this);
 #endif
   }
   HalfEdge(Point<T> *a1, Point<T> *a2, HalfEdge<T> *prev, HalfEdge<T> *next, HalfEdge<T> *twin) : p1(a1), p2(a2), p(prev), n(next), t(twin), h(nullptr)
   {
 #ifdef DEBUG
+    insertedAfter = 0;
     edgeList.push_back(this);
 #endif
   }
@@ -68,6 +72,7 @@ public:
   void setHelper(HalfEdge *e) { h = e; }
 
 #ifdef DEBUG
+  int insertedAfter;
   static std::vector<HalfEdge<T> *> edgeList;
 #endif
 
