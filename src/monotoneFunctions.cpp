@@ -68,10 +68,16 @@ vertexType computeVertexType(HalfEdge<int> *e)
 void insertDiagonal(HalfEdge<int> *fromEdge, HalfEdge<int> *toEdge)
 {
   auto diagonal = new HalfEdge<int>(fromEdge->from(), toEdge->from(), fromEdge->twin(), toEdge->prev()->twin(), nullptr);
+#ifdef DEBUG
+  diagonal->insertedAfter = 1;
+#endif
   fromEdge->twin()->setNext(diagonal);
   toEdge->prev()->twin()->setPrev(diagonal);
 
   auto diagonalTwin = new HalfEdge<int>(toEdge->from(), fromEdge->from(), toEdge->twin(), fromEdge->prev()->twin(), diagonal);
+#ifdef DEBUG
+  diagonalTwin->insertedAfter = 1;
+#endif
   diagonal->setTwin(diagonalTwin);
   toEdge->twin()->setNext(diagonalTwin);
   fromEdge->prev()->twin()->setPrev(diagonalTwin);
@@ -129,11 +135,11 @@ void makeMonotone(HalfEdge<int> *dcel)
       t.insert(edgeVertex);
       break;
     case merge:
-      if (edgeVertex->prev()->helper()->from()->type == merge)
+      if (edgeVertex->next()->helper()->from()->type == merge)
       {
-        insertDiagonal(edgeVertex, edgeVertex->prev()->helper());
+        insertDiagonal(edgeVertex, edgeVertex->next()->helper());
       }
-      t.erase(edgeVertex->prev());
+      t.erase(edgeVertex->next());
       tmpEdge = getPredecessor(t, edgeVertex);
       if (tmpEdge->helper()->from()->type == merge)
       {
@@ -144,11 +150,11 @@ void makeMonotone(HalfEdge<int> *dcel)
     case regular:
       if (*(edgeVertex->next()) > *edgeVertex)
       {
-        if (edgeVertex->prev()->helper()->from()->type == merge)
+        if (edgeVertex->next()->helper()->from()->type == merge)
         {
-          insertDiagonal(edgeVertex, edgeVertex->prev()->helper());
+          insertDiagonal(edgeVertex, edgeVertex->next()->helper());
         }
-        t.erase(edgeVertex->prev());
+        t.erase(edgeVertex->next());
         edgeVertex->setHelper(edgeVertex);
         t.insert(edgeVertex);
       }
