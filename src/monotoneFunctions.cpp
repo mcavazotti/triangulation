@@ -65,6 +65,18 @@ vertexType computeVertexType(HalfEdge<int> *e)
   return regular;
 }
 
+void insertDiagonal(HalfEdge<int> *fromEdge, HalfEdge<int> *toEdge)
+{
+  auto diagonal = new HalfEdge<int>(fromEdge->from(),toEdge->from(),fromEdge->twin(),toEdge->prev()->twin(),nullptr);
+  fromEdge->twin()->setNext(diagonal);
+  toEdge->prev()->twin()->setPrev(diagonal);
+
+  auto diagonalTwin = new HalfEdge<int>(toEdge->from(),fromEdge->from(),toEdge->twin(),fromEdge->prev()->twin(),diagonal);
+  diagonal->setTwin(diagonalTwin);
+  toEdge->twin()->setNext(diagonalTwin);
+  fromEdge->prev()->twin()->setPrev(diagonalTwin);
+}
+
 void makeMonotone(HalfEdge<int> *dcel)
 {
   std::priority_queue<HalfEdge<int> *, std::vector<HalfEdge<int> *>, edgePointerComparison> q;
@@ -75,6 +87,7 @@ void makeMonotone(HalfEdge<int> *dcel)
   do
   {
     q.push(tmpEdge);
+    tmpEdge->from()->type = computeVertexType(tmpEdge);
     tmpEdge = tmpEdge->next();
   } while (tmpEdge != dcel);
 
@@ -82,16 +95,23 @@ void makeMonotone(HalfEdge<int> *dcel)
   {
     auto edgeVertex = q.top();
     q.pop();
-    edgeVertex->from()->type = computeVertexType(edgeVertex);
-
     switch (edgeVertex->from()->type)
     {
     case start:
-      /* code */
+      t.insert(edgeVertex);
+      edgeVertex->setHelper(edgeVertex);
       break;
+    case end:
+    //TODO: helper() might be null
+      if (edgeVertex->prev()->helper()->from()->type == merge)
+      {
+        insertDiagonal(edgeVertex, edgeVertex->prev()->helper());
+      }
+      t.erase(edgeVertex->prev());
+      break;
+
+
     
-    default:
-      break;
     }
   }
 }
