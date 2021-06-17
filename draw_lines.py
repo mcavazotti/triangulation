@@ -18,8 +18,12 @@ if __name__ == "__main__":
 
     for p in range(numPoints):
         # Ler coordenadas dos pontos
-        x1, y1, x2, y2, t = map(float, input().split())
-        ax.plot([x1, x2], [y1, y2], color="#000", lw=1)
+        x1, y1, x2, y2, t, a = map(float, input().split())
+        if a == 0:
+            c = "#000"
+        else:
+            c = "#f00"
+        ax.plot([x1, x2], [y1, y2], color=c, lw=1)
         if t == 0:
             ax.scatter(x1, y1, color="#000", marker="D")
         if t == 1:
