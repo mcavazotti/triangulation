@@ -6,7 +6,7 @@
 
 int main(int argc, char const *argv[])
 {
-  HalfEdge<int> *dcel = readDCEL();
+  HalfEdge *dcel = readDCEL();
 
   makeMonotone(dcel);
   printPolygon();

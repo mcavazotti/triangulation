@@ -1,18 +1,20 @@
 #include "../include/ioFunctions.hpp"
+#include "../include/triangulationFunctions.hpp"
+#include "../include/face.hpp"
 #include <iostream>
 
-HalfEdge<int> *readDCEL()
+HalfEdge *readDCEL()
 {
-  Point<int> *tmpPoint;
-  Point<int> *prevPoint = nullptr;
+  Point *tmpPoint;
+  Point *prevPoint = nullptr;
 
-  HalfEdge<int> *tmpEdge;
-  HalfEdge<int> *prevEdge = nullptr;
-  HalfEdge<int> *firstEdge = nullptr;
-  HalfEdge<int> *highestEdge = nullptr;
+  HalfEdge *tmpEdge;
+  HalfEdge *prevEdge = nullptr;
+  HalfEdge *firstEdge = nullptr;
+  HalfEdge *highestEdge = nullptr;
 
-  HalfEdge<int> *twin = nullptr;
-  HalfEdge<int> *prevTwin = nullptr;
+  HalfEdge *twin = nullptr;
+  HalfEdge *prevTwin = nullptr;
 
   int numPoints;
   std::cin >> numPoints;
@@ -21,8 +23,8 @@ HalfEdge<int> *readDCEL()
   {
     int x, y;
     std::cin >> x >> y;
-    tmpPoint = new Point<int>(x, y);
-    tmpEdge = new HalfEdge<int>(tmpPoint);
+    tmpPoint = new Point(x, y);
+    tmpEdge = new HalfEdge(tmpPoint);
 
     if (firstEdge == nullptr)
     {
@@ -48,7 +50,7 @@ HalfEdge<int> *readDCEL()
         prevTwin = prevEdge->prev()->twin();
       }
 
-      twin = new HalfEdge<int>(tmpPoint, prevPoint, nullptr, prevTwin, prevEdge);
+      twin = new HalfEdge(tmpPoint, prevPoint, nullptr, prevTwin, prevEdge);
       if (prevTwin != nullptr)
       {
         prevTwin->setPrev(twin);
@@ -66,7 +68,7 @@ HalfEdge<int> *readDCEL()
     tmpEdge->setTo(firstEdge->from());
     tmpEdge->setNext(firstEdge);
 
-    twin = new HalfEdge<int>(tmpEdge->to(), tmpEdge->from(), firstEdge->twin(), tmpEdge->prev()->twin(), tmpEdge);
+    twin = new HalfEdge(tmpEdge->to(), tmpEdge->from(), firstEdge->twin(), tmpEdge->prev()->twin(), tmpEdge);
     tmpEdge->prev()->twin()->setPrev(twin);
     tmpEdge->setTwin(twin);
 
@@ -76,7 +78,7 @@ HalfEdge<int> *readDCEL()
 
   // Detect clockwise list
   // Get the other half-edge that starts in the highest point
-  HalfEdge<int> *highestTwin = highestEdge->prev()->twin();
+  HalfEdge *highestTwin = highestEdge->prev()->twin();
 
   // Calculate if the neighbouring points are on the same side
   // relative to the highest point
@@ -88,7 +90,18 @@ HalfEdge<int> *readDCEL()
   if (deltaX1 * deltaX2 <= 0)
   {
     // Return half-edge that is pointing to the left
-    return deltaX1 > deltaX2 ? highestEdge : highestTwin;
+    if (deltaX1 > deltaX2)
+    {
+      setFace(highestEdge, nullptr);
+      setFace(highestTwin, new Face());
+      return highestEdge;
+    }
+    else
+    {
+      setFace(highestTwin, nullptr);
+      setFace(highestEdge, new Face());
+      return highestTwin;
+    }
   }
   else
   {
@@ -96,26 +109,37 @@ HalfEdge<int> *readDCEL()
     slope1 = float(highestEdge->to()->y - highestEdge->from()->y) / float(highestEdge->to()->x - highestEdge->from()->x);
     slope2 = float(highestTwin->to()->y - highestTwin->from()->y) / float(highestTwin->to()->x - highestTwin->from()->x);
 
-    return slope1 > slope2 ? highestEdge : highestTwin;
+    if (slope1 > slope2)
+    {
+      setFace(highestEdge, nullptr);
+      setFace(highestTwin, new Face());
+      return highestEdge;
+    }
+    else
+    {
+      setFace(highestTwin, nullptr);
+      setFace(highestEdge, new Face());
+      return highestTwin;
+    }
   }
 }
 
 void printPolygon()
 {
-  #ifdef DEBUG
-  std::cout << HalfEdge<int>::edgeList.size() << "\n";
+#ifdef DEBUG
+  std::cout << HalfEdge::edgeList.size() << "\n";
 
-  for (const auto &e : HalfEdge<int>::edgeList)
+  for (const auto &e : HalfEdge::edgeList)
   {
     std::cout << e->from()->x << " " << e->from()->y << " " << e->to()->x << " " << e->to()->y << " " << e->from()->type << " " << e->insertedAfter << "\n";
   }
 
 #else
-  std::cout << Point<int>::pointList.size() << "\n";
+  std::cout << Point::pointList.size() << "\n";
 
-  for (const auto &p : Point<int>::pointList)
+  for (const auto &p : Point::pointList)
   {
     std::cout << p->x << " " << p->y << "\n";
   }
-  #endif
+#endif
 }

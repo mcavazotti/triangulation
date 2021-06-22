@@ -9,7 +9,7 @@
  * 
  * It returns a poiter to the highest edge that runs clockwise.
 */
-HalfEdge<int> *readDCEL();
+HalfEdge *readDCEL();
 
 /**
  * Write points to stdout in the order they were read.

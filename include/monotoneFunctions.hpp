@@ -2,6 +2,6 @@
 #define MONOTONE_FUNC_H
 #include "halfEdge.hpp"
 
-void makeMonotone(HalfEdge<int> *dcel);
+void makeMonotone(HalfEdge *dcel);
 
 #endif

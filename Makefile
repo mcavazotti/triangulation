@@ -1,6 +1,6 @@
 CC=g++
 
-CFLAGS= -g -DDEBUG
+CFLAGS= -g -DDEBUG -std=c++17
 
 LFLAGS= -lm
 

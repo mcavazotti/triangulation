@@ -12,7 +12,6 @@ typedef enum
   merge,
 } vertexType;
 
-template <typename T>
 class Point
 {
 public:
@@ -20,7 +19,7 @@ public:
   {
     pointList.push_back(this);
   }
-  Point(T a1, T a2) : x(a1), y(a2), id(++counter)
+  Point(int a1, int a2) : x(a1), y(a2), id(++counter)
   {
     pointList.push_back(this);
   }
@@ -53,29 +52,29 @@ public:
 
   bool operator>=(const Point &p) const
   {
-    return this == p || this > p;
+    return *this == p || *this > p;
   }
 
   bool operator<=(const Point &p) const
   {
-    return this == p || this < p;
+    return *this == p || *this < p;
   }
 
 public:
-  T x, y;
+  int x, y;
   vertexType type;
   const int id;
-  static std::vector<Point<T> *> pointList;
+  static std::vector<Point *> pointList;
 
 private:
   static int counter;
 };
 
-typedef Point<int> PointInt;
 
-template <typename T>
-int Point<T>::counter = 0;
-template <typename T>
-std::vector<Point<T> *> Point<T>::pointList = std::vector<Point<T> *>();
+
+
+inline int Point::counter = 0;
+
+inline std::vector<Point *> Point::pointList = std::vector<Point *>();
 
 #endif // POINT_H

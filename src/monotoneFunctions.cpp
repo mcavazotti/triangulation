@@ -1,4 +1,5 @@
 #include "../include/monotoneFunctions.hpp"
+#include "../include/triangulationFunctions.hpp"
 #include "../include/point.hpp"
 #include <queue>
 #include <vector>
@@ -6,7 +7,7 @@
 #include <cmath>
 
 #include <stdio.h>
-bool edgePointerComparisonFunc(const HalfEdge<int> *a, const HalfEdge<int> *b)
+bool edgePointerComparisonFunc(const HalfEdge *a, const HalfEdge *b)
 {
   return a->from()->x < b->from()->x;
 }
@@ -20,7 +21,7 @@ public:
   {
     reverse = revparam;
   }
-  bool operator()(HalfEdge<int> *a, HalfEdge<int> *b) const
+  bool operator()(HalfEdge *a, HalfEdge *b) const
   {
     if (reverse)
       return (*a) > (*b);
@@ -29,7 +30,7 @@ public:
   }
 };
 
-vertexType computeVertexType(HalfEdge<int> *e)
+vertexType computeVertexType(HalfEdge *e)
 {
   auto vertex = e->from();
   auto prevVertex = e->prev()->from();
@@ -65,27 +66,9 @@ vertexType computeVertexType(HalfEdge<int> *e)
   return regular;
 }
 
-void insertDiagonal(HalfEdge<int> *fromEdge, HalfEdge<int> *toEdge)
-{
-  auto diagonal = new HalfEdge<int>(fromEdge->from(), toEdge->from(), fromEdge->twin(), toEdge->prev()->twin(), nullptr);
-#ifdef DEBUG
-  diagonal->insertedAfter = 1;
-#endif
-  fromEdge->twin()->setNext(diagonal);
-  toEdge->prev()->twin()->setPrev(diagonal);
+typedef std::set<HalfEdge *, bool (*)(const HalfEdge *, const HalfEdge *)> edgeSet;
 
-  auto diagonalTwin = new HalfEdge<int>(toEdge->from(), fromEdge->from(), toEdge->twin(), fromEdge->prev()->twin(), diagonal);
-#ifdef DEBUG
-  diagonalTwin->insertedAfter = 1;
-#endif
-  diagonal->setTwin(diagonalTwin);
-  toEdge->twin()->setNext(diagonalTwin);
-  fromEdge->prev()->twin()->setPrev(diagonalTwin);
-}
-
-typedef std::set<HalfEdge<int> *, bool (*)(const HalfEdge<int> *, const HalfEdge<int> *)> edgeSet;
-
-HalfEdge<int> *getPredecessor(edgeSet t, HalfEdge<int> *e)
+HalfEdge *getPredecessor(edgeSet t, HalfEdge *e)
 {
   auto tmp = t.lower_bound(e);
   auto begin = t.begin();
@@ -95,10 +78,10 @@ HalfEdge<int> *getPredecessor(edgeSet t, HalfEdge<int> *e)
   return *it;
 }
 
-void makeMonotone(HalfEdge<int> *dcel)
+void makeMonotone(HalfEdge *dcel)
 {
-  std::priority_queue<HalfEdge<int> *, std::vector<HalfEdge<int> *>, edgePointerComparison> q;
-  std::set<HalfEdge<int> *, bool (*)(const HalfEdge<int> *, const HalfEdge<int> *)> t(&edgePointerComparisonFunc);
+  std::priority_queue<HalfEdge *, std::vector<HalfEdge *>, edgePointerComparison> q;
+  std::set<HalfEdge *, bool (*)(const HalfEdge *, const HalfEdge *)> t(&edgePointerComparisonFunc);
   auto tmpEdge = dcel;
 
   // Construct priority queue
