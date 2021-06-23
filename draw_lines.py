@@ -6,11 +6,11 @@
 
 import matplotlib
 import matplotlib.pyplot as plt
-from random import random
+from random import random, seed
 
 if __name__ == "__main__":
     # print('matplotlib version: {}'.format(matplotlib.__version__))
-
+    seed()
     fig, ax = plt.subplots()
 
     # Ler número de faces
@@ -26,7 +26,7 @@ if __name__ == "__main__":
             # print(x1,y1)
             pointList.append((x1,y1))
         ax.fill(list(map(lambda p: p[0], pointList)), list(
-            map(lambda p: p[1], pointList)), (random(), random(), random()))
+            map(lambda p: p[1], pointList)), color = (random(), random(), random()))
 
 
     # Ler número de pontos
