@@ -8,18 +8,32 @@ class HalfEdge;
 class Face
 {
 public:
-  Face() : edgeChain(nullptr)
+  Face() : eC(nullptr)
   {
     id = counter;
     counter++;
+    faceList.push_back(this);
   }
 
   int getId() const { return id; }
-  HalfEdge *getChain() const { return edgeChain; }
+  HalfEdge *edgeChain() const { return eC; }
 
   void setChain(HalfEdge *e)
   {
-    edgeChain = e;
+    eC = e;
+  }
+
+  int getFaceSize()
+  {
+    HalfEdge *tmp = eC;
+    int numPoints = 0;
+
+    do
+    {
+      numPoints++;
+      tmp = tmp->next();
+    } while (tmp != eC);
+    return numPoints;
   }
 
 #ifdef DEBUG
@@ -27,7 +41,7 @@ public:
   {
     Point p = Point();
     int numPoints = 0;
-    HalfEdge *tmp = edgeChain;
+    HalfEdge *tmp = eC;
 
     do
     {
@@ -35,7 +49,7 @@ public:
       p.y += tmp->from()->y;
       numPoints++;
       tmp = tmp->next();
-    } while (tmp != edgeChain);
+    } while (tmp != eC);
     return Point(p.x / numPoints, p.y / numPoints);
   }
 #endif
@@ -44,7 +58,7 @@ public:
   static std::vector<Face *> faceList;
 
 private:
-  HalfEdge *edgeChain;
+  HalfEdge *eC;
   int id;
   static int counter;
 };
