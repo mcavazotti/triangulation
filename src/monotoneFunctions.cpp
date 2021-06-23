@@ -9,7 +9,7 @@
 #include <stdio.h>
 bool edgePointerComparisonFunc(const HalfEdge *a, const HalfEdge *b)
 {
-  return a->from()->x < b->from()->x;
+  return a->from()->x > b->from()->x;
 }
 
 class edgePointerComparison
@@ -47,7 +47,7 @@ vertexType computeVertexType(HalfEdge *e)
     float det = (prevVertex->x - vertex->x) * (nextVertex->y - vertex->y) - (prevVertex->y - vertex->y) * (nextVertex->x - vertex->x);
 
     auto angle = atan2(det, dot);
-    if (angle < 0)
+    if (angle > 0)
       return split;
     else
       return start;
@@ -58,7 +58,7 @@ vertexType computeVertexType(HalfEdge *e)
     float det = (prevVertex->x - vertex->x) * (nextVertex->y - vertex->y) - (prevVertex->y - vertex->y) * (nextVertex->x - vertex->x);
 
     auto angle = atan2(det, dot);
-    if (angle < 0)
+    if (angle > 0)
       return merge;
     else
       return end;
@@ -74,6 +74,9 @@ HalfEdge *getPredecessor(edgeSet t, HalfEdge *e)
   auto begin = t.begin();
   auto end = t.end();
   auto size = t.size();
+  if(tmp == t.end()){
+    // fprintf(stderr, "\n\nSET END\n\n");
+  }
   auto it = tmp == t.end() ? std::prev(t.end()) : --tmp;
   return *it;
 }
@@ -82,7 +85,7 @@ void makeMonotone(HalfEdge *dcel)
 {
   std::priority_queue<HalfEdge *, std::vector<HalfEdge *>, edgePointerComparison> q;
   std::set<HalfEdge *, bool (*)(const HalfEdge *, const HalfEdge *)> t(&edgePointerComparisonFunc);
-  auto tmpEdge = dcel;
+  auto tmpEdge = dcel->twin();
 
   // Construct priority queue
   do
@@ -91,7 +94,7 @@ void makeMonotone(HalfEdge *dcel)
     tmpEdge->from()->type = computeVertexType(tmpEdge);
     tmpEdge->setHelper(tmpEdge);
     tmpEdge = tmpEdge->next();
-  } while (tmpEdge != dcel);
+  } while (tmpEdge != dcel->twin());
 
   while (!q.empty())
   {
@@ -104,11 +107,11 @@ void makeMonotone(HalfEdge *dcel)
       edgeVertex->setHelper(edgeVertex);
       break;
     case end:
-      if (edgeVertex->prev()->helper()->from()->type == merge)
+      if (edgeVertex->next()->helper()->from()->type == merge)
       {
-        insertDiagonal(edgeVertex, edgeVertex->prev()->helper());
+        insertDiagonal(edgeVertex, edgeVertex->next()->helper());
       }
-      t.erase(edgeVertex->prev());
+      t.erase(edgeVertex->next());
       break;
     case split:
       tmpEdge = getPredecessor(t, edgeVertex);

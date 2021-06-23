@@ -9,21 +9,21 @@ import matplotlib.pyplot as plt
 from random import random
 
 if __name__ == "__main__":
-    print('matplotlib version: {}'.format(matplotlib.__version__))
+    # print('matplotlib version: {}'.format(matplotlib.__version__))
 
     fig, ax = plt.subplots()
 
     # Ler número de faces
     numFaces = int(input())
-    print(numFaces)
+    # print(numFaces)
     pointList = []
     for f in range(numFaces):
         numPoints = int(input())
-        print(numPoints)
+        # print(numPoints)
         pointList.clear()
         for p in range(numPoints):
             x1,y1 = map(float, input().split())
-            print(x1,y1)
+            # print(x1,y1)
             pointList.append((x1,y1))
         ax.fill(list(map(lambda p: p[0], pointList)), list(
             map(lambda p: p[1], pointList)), (random(), random(), random()))
