@@ -127,6 +127,19 @@ HalfEdge *readDCEL()
 void printPolygon()
 {
 #ifdef DEBUG
+  std::cout << Face::faceList.size() << "\n";
+  for (const auto &f : Face::faceList)
+  {
+    std::cerr << f->getId() << "\n";
+    std::cout << f->getFaceSize() << "\n";
+    HalfEdge *tmp = f->edgeChain();
+    do
+    {
+      std::cout << tmp->from()->x << " " << tmp->from()->y << "\n";
+      tmp = tmp->next();
+    } while (tmp != f->edgeChain());
+  }
+
   std::cout << HalfEdge::edgeList.size() << "\n";
 
   for (const auto &e : HalfEdge::edgeList)
