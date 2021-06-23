@@ -130,7 +130,7 @@ void printPolygon()
   std::cout << Face::faceList.size() << "\n";
   for (const auto &f : Face::faceList)
   {
-    std::cerr << f->getId() << "\n";
+    // std::cerr << "\n" << f->getId() << "\n";
     std::cout << f->getFaceSize() << "\n";
     HalfEdge *tmp = f->edgeChain();
     do

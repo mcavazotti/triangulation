@@ -7,6 +7,54 @@
 #include <cmath>
 
 #include <stdio.h>
+
+void findCorrectEdgeChain(Point *p1, Point *p2, HalfEdge **from, HalfEdge **to)
+{
+  fprintf(stderr, "\nfindCorrectEdgeChain\n");
+      HalfEdge *tmp,
+      *t, *f;
+  for (const auto &face : Face::faceList)
+  {
+    
+    tmp = face->edgeChain();
+    f = nullptr;
+    t = nullptr;
+    do
+    {
+      if (tmp->from() == p1)
+      {
+        if (f == nullptr)
+        {
+          f = tmp;
+        }
+        else
+        {
+          t = tmp;
+        }
+      }
+      if (tmp->from() == p2)
+      {
+        if (f == nullptr)
+        {
+          f = tmp;
+        }
+        else
+        {
+          t = tmp;
+        }
+      }
+      tmp = tmp->next();
+    } while (tmp != face->edgeChain());
+    if (f != nullptr && t != nullptr)
+    {
+      *from = f;
+      *to = t;
+      break;
+    }
+  }
+  fprintf(stderr, "EXIT findCorrectEdgeChain\n");
+}
+
 bool edgePointerComparisonFunc(const HalfEdge *a, const HalfEdge *b)
 {
   return a->from()->x < b->from()->x;
@@ -84,6 +132,8 @@ void makeMonotone(HalfEdge *dcel)
   std::set<HalfEdge *, bool (*)(const HalfEdge *, const HalfEdge *)> t(&edgePointerComparisonFunc);
   auto tmpEdge = dcel;
 
+  HalfEdge *fromEdge, *toEdge;
+
   // Construct priority queue
   do
   {
@@ -106,13 +156,15 @@ void makeMonotone(HalfEdge *dcel)
     case end:
       if (edgeVertex->prev()->helper()->from()->type == merge)
       {
-        insertDiagonal(edgeVertex, edgeVertex->prev()->helper());
+        findCorrectEdgeChain(edgeVertex->from(), edgeVertex->prev()->helper()->from(), &fromEdge, &toEdge);
+        insertDiagonal(fromEdge, toEdge);
       }
       t.erase(edgeVertex->prev());
       break;
     case split:
       tmpEdge = getPredecessor(t, edgeVertex);
-      insertDiagonal(edgeVertex, tmpEdge->helper());
+      findCorrectEdgeChain(edgeVertex->from(), tmpEdge->helper()->from(), &fromEdge, &toEdge);
+      insertDiagonal(fromEdge, toEdge);
       tmpEdge->setHelper(edgeVertex);
       edgeVertex->setHelper(edgeVertex);
       t.insert(edgeVertex);
@@ -120,13 +172,15 @@ void makeMonotone(HalfEdge *dcel)
     case merge:
       if (edgeVertex->next()->helper()->from()->type == merge)
       {
-        insertDiagonal(edgeVertex, edgeVertex->next()->helper());
+        findCorrectEdgeChain(edgeVertex->from(), edgeVertex->next()->helper()->from(), &fromEdge, &toEdge);
+        insertDiagonal(fromEdge,toEdge);
       }
       t.erase(edgeVertex->next());
       tmpEdge = getPredecessor(t, edgeVertex);
       if (tmpEdge->helper()->from()->type == merge)
       {
-        insertDiagonal(edgeVertex, tmpEdge->helper());
+        findCorrectEdgeChain(edgeVertex->from(), tmpEdge->helper()->from(), &fromEdge, &toEdge);
+        insertDiagonal(fromEdge, toEdge);
       }
       tmpEdge->setHelper(edgeVertex);
       break;
@@ -135,7 +189,8 @@ void makeMonotone(HalfEdge *dcel)
       {
         if (edgeVertex->next()->helper()->from()->type == merge)
         {
-          insertDiagonal(edgeVertex, edgeVertex->next()->helper());
+          findCorrectEdgeChain(edgeVertex->from(), edgeVertex->next()->helper()->from(), &fromEdge, &toEdge);
+          insertDiagonal(fromEdge, toEdge);
         }
         t.erase(edgeVertex->next());
         edgeVertex->setHelper(edgeVertex);
@@ -146,7 +201,8 @@ void makeMonotone(HalfEdge *dcel)
         tmpEdge = getPredecessor(t, edgeVertex);
         if (tmpEdge->helper()->from()->type == merge)
         {
-          insertDiagonal(edgeVertex, tmpEdge->helper());
+          findCorrectEdgeChain(edgeVertex->from(), tmpEdge->helper()->from(), &fromEdge, &toEdge);
+          insertDiagonal(fromEdge, toEdge);
         }
         tmpEdge->setHelper(edgeVertex);
       }
