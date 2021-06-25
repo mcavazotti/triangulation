@@ -17,6 +17,7 @@ vertexType computeVertexType(HalfEdge *e)
   {
     return regular;
   }
+  // Both neighbors are bellow
   else if ((*vertex) > (*prevVertex) && (*vertex) > (*nextVertex))
   {
     auto angle = computeAngle(prevVertex,vertex,nextVertex);
@@ -25,6 +26,7 @@ vertexType computeVertexType(HalfEdge *e)
     else
       return start;
   }
+  // Both neighbors are above
   else if ((*vertex) < (*prevVertex) && (*vertex) < (*nextVertex))
   {
     auto angle = computeAngle(prevVertex, vertex, nextVertex);
@@ -41,9 +43,6 @@ typedef std::set<HalfEdge *, bool (*)(const HalfEdge *, const HalfEdge *)> edgeS
 HalfEdge *getPredecessor(edgeSet t, HalfEdge *e)
 {
   auto tmp = t.lower_bound(e);
-  auto begin = t.begin();
-  auto end = t.end();
-  auto size = t.size();
   auto it = tmp == t.end() ? std::prev(t.end()) : --tmp;
   return *it;
 }
@@ -69,6 +68,7 @@ void makeMonotone(HalfEdge *dcel)
   {
     auto edgeVertex = q.top();
     q.pop();
+    // Treat every case
     switch (edgeVertex->from()->type)
     {
     case start:

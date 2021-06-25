@@ -126,12 +126,14 @@ HalfEdge *readDCEL()
 
 void printPolygon()
 {
+  // Print the points
   std::cout << Point::pointList.size() << "\n";
   for (const auto &p : Point::pointList)
   {
     std::cout << p->x << " " << p->y << "\n";
   }
 
+  // Print the faces
   std::cout << Face::faceList.size() << "\n";
   for (const auto &f : Face::faceList)
   {

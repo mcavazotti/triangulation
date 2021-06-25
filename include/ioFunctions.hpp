@@ -14,7 +14,7 @@ HalfEdge *readDCEL();
 /**
  * Write points to stdout in the order they were read.
  * 
- * It uses the Point class' internal counters.
+ * It uses the Point's and Face's instance array
  */
 void printPolygon();
 

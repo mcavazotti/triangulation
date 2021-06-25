@@ -5,6 +5,11 @@
 
 class HalfEdge;
 
+/**
+ * This class represents of a face or partition.
+ * 
+ * It has an internal counter and a static array that stores every Face instance
+*/
 class Face
 {
 public:

@@ -6,10 +6,10 @@
 #include <stack>
 #include <algorithm>
 
-
 void findCorrectEdgeChain(Point *p1, Point *p2, HalfEdge **from, HalfEdge **to)
 {
   HalfEdge *tmp, *t, *f;
+  // Look through faces if both points are present
   for (const auto &face : Face::faceList)
   {
 
@@ -21,24 +21,16 @@ void findCorrectEdgeChain(Point *p1, Point *p2, HalfEdge **from, HalfEdge **to)
       if (tmp->from() == p1)
       {
         if (f == nullptr)
-        {
           f = tmp;
-        }
         else
-        {
           t = tmp;
-        }
       }
       if (tmp->from() == p2)
       {
         if (f == nullptr)
-        {
           f = tmp;
-        }
         else
-        {
           t = tmp;
-        }
       }
       tmp = tmp->next();
     } while (tmp != face->edgeChain());
@@ -71,9 +63,11 @@ void setFace(HalfEdge *edgeChain, Face *face)
 
 void insertDiagonal(HalfEdge *fromEdge, HalfEdge *toEdge)
 {
+  // Create diagonal and its twin
   auto diagonal = new HalfEdge(toEdge->from(), fromEdge->from(), toEdge->prev(), fromEdge, nullptr);
   auto diagonalTwin = new HalfEdge(fromEdge->from(), toEdge->from(), fromEdge->prev(), toEdge, diagonal);
 
+  // Update edge chain
   diagonal->setTwin(diagonalTwin);
   fromEdge->prev()->setNext(diagonalTwin);
   toEdge->prev()->setNext(diagonal);
@@ -84,6 +78,7 @@ void insertDiagonal(HalfEdge *fromEdge, HalfEdge *toEdge)
   diagonal->setHelper(diagonal);
   diagonalTwin->setHelper(diagonalTwin);
 
+  // Update face
   setFace(diagonal, fromEdge->face());
   setFace(diagonalTwin, new Face());
 }
@@ -123,6 +118,7 @@ void triangulate()
 
     for (int i = 2; i < v.size() - 1; i++)
     {
+      // Points are not from the same chain
       if (v[i]->chain != s.top()->chain)
       {
         while (!s.empty())
@@ -131,13 +127,14 @@ void triangulate()
           s.pop();
           if (s.size())
           {
-            findCorrectEdgeChain(v[i]->from(),tmpEdge->from(),&fromEdge, &toEdge);
+            findCorrectEdgeChain(v[i]->from(), tmpEdge->from(), &fromEdge, &toEdge);
             insertDiagonal(fromEdge, toEdge);
           }
         }
         s.push(v[i - 1]);
         s.push(v[i]);
       }
+      // Points are from the same chain
       else
       {
         pivot = s.top();
@@ -146,12 +143,14 @@ void triangulate()
         {
           tmpEdge = s.top();
           s.pop();
+          // Find out if the diagonal would be outside the polygon
           auto angle = computeAngle(v[i]->from(), pivot->from(), tmpEdge->from());
           HalfEdge *leftVertex = edgePointerHorizontalComparisonFunc(pivot, tmpEdge) ? tmpEdge : v[i];
           if ((*leftVertex) > (*pivot))
           {
             angle = -angle;
           }
+          // The diagonal is outside the polygon
           if (angle > 0)
           {
             s.push(tmpEdge);
@@ -172,7 +171,9 @@ void triangulate()
         s.push(v[i]);
       }
     }
+    // Skip the first item in the stack...
     s.pop();
+    // ... and also the last
     while (s.size() > 1)
     {
       findCorrectEdgeChain(v.back()->from(), s.top()->from(), &fromEdge, &toEdge);

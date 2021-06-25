@@ -12,6 +12,11 @@ typedef enum
   merge,
 } vertexType;
 
+/**
+ * This class represents of a point.
+ * 
+ * It has an internal counter and a static array that stores every Point instance
+*/
 class Point
 {
 public:

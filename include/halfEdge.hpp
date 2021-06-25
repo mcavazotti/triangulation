@@ -5,6 +5,9 @@
 
 class Face;
 
+/**
+ * This class represents a node for the DCEL
+*/
 class HalfEdge
 {
 public:
