@@ -8,28 +8,28 @@ class Face;
 class HalfEdge
 {
 public:
-  HalfEdge() : p1(nullptr), p2(nullptr), p(nullptr), n(nullptr), t(nullptr), h(nullptr), f(nullptr)
+  HalfEdge() : p1(nullptr), p2(nullptr), p(nullptr), n(nullptr), t(nullptr), h(nullptr), f(nullptr), chain(0)
   {
 #ifdef DEBUG
     insertedAfter = 0;
     edgeList.push_back(this);
 #endif
   }
-  HalfEdge(Point *a1) : p1(a1), p2(nullptr), p(nullptr), n(nullptr), t(nullptr), h(nullptr), f(nullptr)
+  HalfEdge(Point *a1) : p1(a1), p2(nullptr), p(nullptr), n(nullptr), t(nullptr), h(nullptr), f(nullptr), chain(0)
   {
 #ifdef DEBUG
     insertedAfter = 0;
     edgeList.push_back(this);
 #endif
   }
-  HalfEdge(Point *a1, Point *a2) : p1(a1), p2(a2), p(nullptr), n(nullptr), t(nullptr), h(nullptr), f(nullptr)
+  HalfEdge(Point *a1, Point *a2) : p1(a1), p2(a2), p(nullptr), n(nullptr), t(nullptr), h(nullptr), f(nullptr), chain(0)
   {
 #ifdef DEBUG
     insertedAfter = 0;
     edgeList.push_back(this);
 #endif
   }
-  HalfEdge(Point *a1, Point *a2, HalfEdge *prev, HalfEdge *next, HalfEdge *twin) : p1(a1), p2(a2), p(prev), n(next), t(twin), h(nullptr), f(nullptr)
+  HalfEdge(Point *a1, Point *a2, HalfEdge *prev, HalfEdge *next, HalfEdge *twin) : p1(a1), p2(a2), p(prev), n(next), t(twin), h(nullptr), f(nullptr), chain(0)
   {
 #ifdef DEBUG
     insertedAfter = 0;
@@ -74,6 +74,8 @@ public:
   void setHelper(HalfEdge *e) { h = e; }
   void setFace(Face *fa) { f = fa; }
 
+public:
+  int chain;
 #ifdef DEBUG
   int insertedAfter;
   static std::vector<HalfEdge *> edgeList;

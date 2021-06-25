@@ -1,82 +1,12 @@
 #include "../include/monotoneFunctions.hpp"
 #include "../include/triangulationFunctions.hpp"
+#include "../include/utilFunctions.hpp"
 #include "../include/point.hpp"
 #include <queue>
 #include <vector>
 #include <set>
-#include <cmath>
 
 #include <stdio.h>
-
-void findCorrectEdgeChain(Point *p1, Point *p2, HalfEdge **from, HalfEdge **to)
-{
-  fprintf(stderr, "\nfindCorrectEdgeChain\n");
-      HalfEdge *tmp,
-      *t, *f;
-  for (const auto &face : Face::faceList)
-  {
-    
-    tmp = face->edgeChain();
-    f = nullptr;
-    t = nullptr;
-    do
-    {
-      if (tmp->from() == p1)
-      {
-        if (f == nullptr)
-        {
-          f = tmp;
-        }
-        else
-        {
-          t = tmp;
-        }
-      }
-      if (tmp->from() == p2)
-      {
-        if (f == nullptr)
-        {
-          f = tmp;
-        }
-        else
-        {
-          t = tmp;
-        }
-      }
-      tmp = tmp->next();
-    } while (tmp != face->edgeChain());
-    if (f != nullptr && t != nullptr)
-    {
-      *from = f;
-      *to = t;
-      break;
-    }
-  }
-  fprintf(stderr, "EXIT findCorrectEdgeChain\n");
-}
-
-bool edgePointerComparisonFunc(const HalfEdge *a, const HalfEdge *b)
-{
-  return a->from()->x < b->from()->x;
-}
-
-class edgePointerComparison
-{
-  bool reverse;
-
-public:
-  edgePointerComparison(const bool &revparam = false)
-  {
-    reverse = revparam;
-  }
-  bool operator()(HalfEdge *a, HalfEdge *b) const
-  {
-    if (reverse)
-      return (*a) > (*b);
-    else
-      return (*a) < (*b);
-  }
-};
 
 vertexType computeVertexType(HalfEdge *e)
 {
@@ -91,10 +21,7 @@ vertexType computeVertexType(HalfEdge *e)
   }
   else if ((*vertex) > (*prevVertex) && (*vertex) > (*nextVertex))
   {
-    float dot = (prevVertex->x - vertex->x) * (nextVertex->x - vertex->x) + (prevVertex->y - vertex->y) * (nextVertex->y - vertex->y);
-    float det = (prevVertex->x - vertex->x) * (nextVertex->y - vertex->y) - (prevVertex->y - vertex->y) * (nextVertex->x - vertex->x);
-
-    auto angle = atan2(det, dot);
+    auto angle = computeAngle(prevVertex,vertex,nextVertex);
     if (angle < 0)
       return split;
     else
@@ -102,10 +29,7 @@ vertexType computeVertexType(HalfEdge *e)
   }
   else if ((*vertex) < (*prevVertex) && (*vertex) < (*nextVertex))
   {
-    float dot = (prevVertex->x - vertex->x) * (nextVertex->x - vertex->x) + (prevVertex->y - vertex->y) * (nextVertex->y - vertex->y);
-    float det = (prevVertex->x - vertex->x) * (nextVertex->y - vertex->y) - (prevVertex->y - vertex->y) * (nextVertex->x - vertex->x);
-
-    auto angle = atan2(det, dot);
+    auto angle = computeAngle(prevVertex, vertex, nextVertex);
     if (angle < 0)
       return merge;
     else
@@ -129,7 +53,7 @@ HalfEdge *getPredecessor(edgeSet t, HalfEdge *e)
 void makeMonotone(HalfEdge *dcel)
 {
   std::priority_queue<HalfEdge *, std::vector<HalfEdge *>, edgePointerComparison> q;
-  std::set<HalfEdge *, bool (*)(const HalfEdge *, const HalfEdge *)> t(&edgePointerComparisonFunc);
+  std::set<HalfEdge *, bool (*)(const HalfEdge *, const HalfEdge *)> t(&edgePointerHorizontalComparisonFunc);
   auto tmpEdge = dcel;
 
   HalfEdge *fromEdge, *toEdge;
@@ -173,7 +97,7 @@ void makeMonotone(HalfEdge *dcel)
       if (edgeVertex->next()->helper()->from()->type == merge)
       {
         findCorrectEdgeChain(edgeVertex->from(), edgeVertex->next()->helper()->from(), &fromEdge, &toEdge);
-        insertDiagonal(fromEdge,toEdge);
+        insertDiagonal(fromEdge, toEdge);
       }
       t.erase(edgeVertex->next());
       tmpEdge = getPredecessor(t, edgeVertex);

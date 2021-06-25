@@ -6,7 +6,7 @@
 
 import matplotlib
 import matplotlib.pyplot as plt
-from random import random, seed
+from random import uniform, seed
 
 if __name__ == "__main__":
     # print('matplotlib version: {}'.format(matplotlib.__version__))
@@ -26,7 +26,7 @@ if __name__ == "__main__":
             # print(x1,y1)
             pointList.append((x1,y1))
         ax.fill(list(map(lambda p: p[0], pointList)), list(
-            map(lambda p: p[1], pointList)), color = (random(), random(), random()))
+            map(lambda p: p[1], pointList)), color = (uniform(0.1,1), uniform(0.1,1), uniform(0.1,1), 0.8))
 
 
     # Ler número de pontos

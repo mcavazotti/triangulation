@@ -12,7 +12,7 @@
             "program": "${workspaceFolder}/triangulate",
             "args": [
                 "<",
-                "testes/49-v.in"
+                "testes/49-simple.in"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

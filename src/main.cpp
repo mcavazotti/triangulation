@@ -1,14 +1,14 @@
-#include "../include/point.hpp"
 #include "../include/halfEdge.hpp"
 #include "../include/ioFunctions.hpp"
 #include "../include/monotoneFunctions.hpp"
-#include <stdio.h>
+#include "../include/triangulationFunctions.hpp"
 
 int main(int argc, char const *argv[])
 {
   HalfEdge *dcel = readDCEL();
 
   makeMonotone(dcel);
+  triangulate();
   printPolygon();
 
   return 0;
