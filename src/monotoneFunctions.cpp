@@ -6,8 +6,6 @@
 #include <vector>
 #include <set>
 
-#include <stdio.h>
-
 vertexType computeVertexType(HalfEdge *e)
 {
   auto vertex = e->from();

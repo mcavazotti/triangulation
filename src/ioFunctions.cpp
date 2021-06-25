@@ -126,33 +126,30 @@ HalfEdge *readDCEL()
 
 void printPolygon()
 {
-#ifdef DEBUG
-  std::cout << Face::faceList.size() << "\n";
-  for (const auto &f : Face::faceList)
-  {
-    // std::cerr << "\n" << f->getId() << "\n";
-    std::cout << f->getFaceSize() << "\n";
-    HalfEdge *tmp = f->edgeChain();
-    do
-    {
-      std::cout << tmp->from()->x << " " << tmp->from()->y << "\n";
-      tmp = tmp->next();
-    } while (tmp != f->edgeChain());
-  }
-
-  std::cout << HalfEdge::edgeList.size() << "\n";
-
-  for (const auto &e : HalfEdge::edgeList)
-  {
-    std::cout << e->from()->x << " " << e->from()->y << " " << e->to()->x << " " << e->to()->y << " " << e->from()->type << " " << e->insertedAfter << "\n";
-  }
-
-#else
   std::cout << Point::pointList.size() << "\n";
-
   for (const auto &p : Point::pointList)
   {
     std::cout << p->x << " " << p->y << "\n";
   }
-#endif
+
+  std::cout << Face::faceList.size() << "\n";
+  for (const auto &f : Face::faceList)
+  {
+    auto tmpEdge = f->edgeChain();
+    do
+    {
+      std::cout << tmpEdge->from()->id << " ";
+      tmpEdge = tmpEdge->next();
+    } while (tmpEdge != f->edgeChain());
+    do
+    {
+      if (tmpEdge->next()->twin()->face() == nullptr)
+        std::cout << "0 ";
+      else
+        std::cout << tmpEdge->next()->twin()->face()->getId() << " ";
+
+      tmpEdge = tmpEdge->next();
+    } while (tmpEdge != f->edgeChain());
+    std::cout << "\n";
+  }
 }

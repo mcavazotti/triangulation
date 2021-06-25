@@ -8,34 +8,10 @@ class Face;
 class HalfEdge
 {
 public:
-  HalfEdge() : p1(nullptr), p2(nullptr), p(nullptr), n(nullptr), t(nullptr), h(nullptr), f(nullptr), chain(0)
-  {
-#ifdef DEBUG
-    insertedAfter = 0;
-    edgeList.push_back(this);
-#endif
-  }
-  HalfEdge(Point *a1) : p1(a1), p2(nullptr), p(nullptr), n(nullptr), t(nullptr), h(nullptr), f(nullptr), chain(0)
-  {
-#ifdef DEBUG
-    insertedAfter = 0;
-    edgeList.push_back(this);
-#endif
-  }
-  HalfEdge(Point *a1, Point *a2) : p1(a1), p2(a2), p(nullptr), n(nullptr), t(nullptr), h(nullptr), f(nullptr), chain(0)
-  {
-#ifdef DEBUG
-    insertedAfter = 0;
-    edgeList.push_back(this);
-#endif
-  }
-  HalfEdge(Point *a1, Point *a2, HalfEdge *prev, HalfEdge *next, HalfEdge *twin) : p1(a1), p2(a2), p(prev), n(next), t(twin), h(nullptr), f(nullptr), chain(0)
-  {
-#ifdef DEBUG
-    insertedAfter = 0;
-    edgeList.push_back(this);
-#endif
-  }
+  HalfEdge() : p1(nullptr), p2(nullptr), p(nullptr), n(nullptr), t(nullptr), h(nullptr), f(nullptr), chain(0) {}
+  HalfEdge(Point *a1) : p1(a1), p2(nullptr), p(nullptr), n(nullptr), t(nullptr), h(nullptr), f(nullptr), chain(0) {}
+  HalfEdge(Point *a1, Point *a2) : p1(a1), p2(a2), p(nullptr), n(nullptr), t(nullptr), h(nullptr), f(nullptr), chain(0) {}
+  HalfEdge(Point *a1, Point *a2, HalfEdge *prev, HalfEdge *next, HalfEdge *twin) : p1(a1), p2(a2), p(prev), n(next), t(twin), h(nullptr), f(nullptr), chain(0) {}
 
   bool operator>(const HalfEdge &e) const
   {
@@ -76,24 +52,11 @@ public:
 
 public:
   int chain;
-#ifdef DEBUG
-  int insertedAfter;
-  static std::vector<HalfEdge *> edgeList;
-#endif
 
 private:
   Point *p1, *p2;
   HalfEdge *p, *n, *t, *h;
   Face *f;
-
-#ifdef DEBUG
-  static int counter;
-#endif
 };
-
-#ifdef DEBUG
-inline int HalfEdge::counter = 0;
-inline std::vector<HalfEdge *> HalfEdge::edgeList = std::vector<HalfEdge *>();
-#endif
 
 #endif

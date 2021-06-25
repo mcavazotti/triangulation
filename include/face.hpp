@@ -36,24 +36,6 @@ public:
     return numPoints;
   }
 
-#ifdef DEBUG
-  Point getMiddlePoint()
-  {
-    Point p = Point();
-    int numPoints = 0;
-    HalfEdge *tmp = eC;
-
-    do
-    {
-      p.x += tmp->from()->x;
-      p.y += tmp->from()->y;
-      numPoints++;
-      tmp = tmp->next();
-    } while (tmp != eC);
-    return Point(p.x / numPoints, p.y / numPoints);
-  }
-#endif
-
 public:
   static std::vector<Face *> faceList;
 
